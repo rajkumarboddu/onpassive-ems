@@ -8,8 +8,8 @@ const md5 = require("md5");
 const Employee = require("./models/Employee");
 const User = require("./models/User");
 
-// check if default admin user exists
-const createAdminUser = async () => {
+(async () => {
+  // check if default admin user exists
   const admin = await User.findOne({ email: ADMIN_EMAIL });
 
   if (!admin) {
@@ -21,14 +21,10 @@ const createAdminUser = async () => {
     });
     await adminUser.save();
   } else {
-    console.log("Admin user already exists");
+    console.log("Admin user already exists... Skipping admin user creation...");
   }
-};
 
-createAdminUser();
-
-// insert fake employee data
-(async () => {
+  // insert fake employee data
   const employeeCount = await Employee.countDocuments({});
 
   if (DB_DUMP_DATA && employeeCount === 0) {
@@ -49,5 +45,11 @@ createAdminUser();
     }
 
     await Employee.insertMany(employeeList);
+
+    console.log(`Inserted ${DB_DUMP_MAX_RECORDS} fake employee records...`);
+  } else {
+    console.log(
+      "Employee records already exists... Skip dumping fake records..."
+    );
   }
 })();
